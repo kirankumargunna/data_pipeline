@@ -1,6 +1,7 @@
 import pandas as pd
 from process_data import process_csv
 
+
 def test_process_csv():
     # Create a sample CSV for testing
     df = pd.DataFrame({"A": [1, None, 3], "B": [4, 5, 6]})
