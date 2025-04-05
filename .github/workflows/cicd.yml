@@ -1,0 +1,62 @@
+name: Python CI/CD Pipeline
+
+# Trigger the workflow on push to main branch
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest  # Use a fresh Ubuntu VM
+
+    steps:
+      # Step 1: Checkout the repository code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Python (use version 3.11, common in industry)
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      # Step 3: Install dependencies
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install flake8  # For linting
+
+      # Step 4: Lint the code (industry standard for quality)
+      - name: Lint with flake8
+        run: |
+          flake8 . --max-line-length=88 --extend-ignore=E203
+
+      # Step 5: Run tests
+      - name: Run tests
+        run: |
+          pytest test_process_data.py --verbose
+
+  deploy:
+    needs: build-and-test  # Only runs if tests pass
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'  # Only deploy from main
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Dummy deployment
+        run: |
+          echo "Deploying to production (simulated)..."
+          python process_data.py  # Simulate running the script
